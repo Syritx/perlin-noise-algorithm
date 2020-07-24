@@ -50,6 +50,7 @@ namespace perlin_noise_algorithm
             // checking if the x and z coordinates are not on the border
             if (x <= length - 1 && z <= length - 1 && x > 0 && z > 0)
             {
+                // grabbing a new vertex to change
                 newX = x + xOffset;
                 newZ = z + zOffset;
             }
