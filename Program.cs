@@ -78,7 +78,7 @@ namespace perlin_noise_algorithm
             Random ry = new Random();
             int yOffset = ry.Next(0, 5);
 
-            if (rOperator > .5) focus = new Vec3(focus.x, origin.y + yOffset, focus.z);
+            if (rOperator >= .5) focus = new Vec3(focus.x, origin.y + yOffset, focus.z);
             else focus = new Vec3(focus.x, origin.y - yOffset, focus.z);
 
             return focus;
