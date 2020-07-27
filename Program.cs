@@ -1,37 +1,39 @@
 ﻿using System;
 
-namespace perlin_noise_algorithm
-{
+namespace perlin_noise_algorithm {
 
-    class Vec3
-    {
-        public int x { get; }
-        public int y { get; }
-        public int z { get; }
+    class Vec3 {
+        public float x { get; }
+        public float y { get; }
+        public float z { get; }
 
-        public Vec3(int x, int y, int z)
-        {
+        public Vec3(float x, float y, float z) {
             this.x = x;
             this.y = y;
             this.z = z;
         }
     }
 
-    class Perlin
-    {
+    class Perlin {
         Vec3[] coordinates;
         int index;
         int length;
 
-        public Perlin(int length)
-        {
+        float amplitude;
+        float frequency;
+
+        public Perlin(int length, float amplitude, float frequency) {
+
             this.length = length;
+            this.amplitude = amplitude;
+            this.frequency = frequency;
 
             // creating all the vertices
             coordinates = new Vec3[length * length];
+
             for (int nx = 0; nx < length; nx++) {
                 for (int nz = 0; nz < length; nz++) {
-                    coordinates[index] = new Vec3(nx, 0, nz);
+                    coordinates[index] = new Vec3(nx, 4, nz);
                     index++;
                 }
             }
@@ -48,24 +50,23 @@ namespace perlin_noise_algorithm
             int zOffset = rz.Next(-1, 1);
 
             // checking if the x and z coordinates are not on the border
-            if (x <= length - 1 && z <= length - 1 && x > 0 && z > 0)
-            {
+            if (x <= length - 1 && z <= length - 1 && x > 0 && z > 0) {
                 // grabbing a new vertex to change
                 newX = x + xOffset;
                 newZ = z + zOffset;
             }
 
             // getting the origin vertex and the new vertex
-            Vec3 origin = new Vec3(0,0,0);
-            Vec3 focus = new Vec3(0,0,0);
+            Vec3 origin = new Vec3(0, 0, 0);
+            Vec3 focus = new Vec3(0, 0, 0);
 
-            for (int i = 0; i < coordinates.Length; i++)
-            {
-                if (coordinates[i].x == x && coordinates[i].z == z) {
+            for (int i = 0; i < coordinates.Length; i++) {
+
+                if ((int)coordinates[i].x == x && (int)coordinates[i].z == z) {
                     origin = coordinates[i];
                     Console.WriteLine("found origin");
                 }
-                if (coordinates[i].x == newX && coordinates[i].z == newZ) {
+                if ((int)coordinates[i].x == newX && (int)coordinates[i].z == newZ) {
                     focus = coordinates[i];
                     Console.WriteLine("found focus");
                 }
@@ -76,29 +77,29 @@ namespace perlin_noise_algorithm
             double rOperator = randomOp.NextDouble();
 
             Random ry = new Random();
-            int yOffset = ry.Next(0, 5);
+            float yOffset = ry.Next(-5, 10)*frequency;
 
-            if (rOperator >= .5) focus = new Vec3(focus.x, origin.y + yOffset, focus.z);
-            else focus = new Vec3(focus.x, origin.y - yOffset, focus.z);
-
+            focus = new Vec3(focus.x, origin.y + yOffset*amplitude, focus.z);
             return focus;
         }
     }
 
-    class MainClass
-    {
+    class MainClass {
+
         static Perlin perlin;
-        static int length = 100, index;
+        static int length = 10, index;
+        static float amplitude = 1.5f;
+        static float frequency = 1.234f;
 
         static Vec3[] coordinates;
 
-        public static void Main(string[] args)
-        {
-            coordinates = new Vec3[length*length];
-            perlin = new Perlin(length);
+        public static void Main(string[] args) {
+
+            coordinates = new Vec3[length * length];
+            perlin = new Perlin(length,amplitude,frequency);
 
             for (int x = 0; x < length; x++) {
-                for (int z = 0; z < length; z++) {
+                for (int z = 0; z < length; z++){
                     coordinates[index] = perlin.noise(x, z);
                     index++;
                 }
@@ -109,7 +110,7 @@ namespace perlin_noise_algorithm
 
                 string mapping = null;
                 for (int z = 0; z < length; z++) {
-                    mapping += coordinates[mappingIndex].y.ToString("0 ");
+                    mapping += coordinates[mappingIndex].y.ToString("0.00 ");
                     mappingIndex++;
                 }
 
